@@ -150,8 +150,10 @@ public class Cryptsy {
 		return authrequest("myorders", null);
 	}
 
-	public String getDepth() throws CryptsyException {
-		return authrequest("depth", null);
+	public String getDepth(int marketid) throws CryptsyException {
+		Map<String,String> args = new HashMap<String,String>() ;
+		args.put("marketid",Integer.toString(marketid)) ;
+		return authrequest("depth", args);
 	}
 
 	public String getAllMyOrders() throws CryptsyException {

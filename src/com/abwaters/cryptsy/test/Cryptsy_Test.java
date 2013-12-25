@@ -117,7 +117,7 @@ public class Cryptsy_Test {
 
 	@Test
 	public void testGetDepth() throws CryptsyException {
-		System.out.println(cryptsy.getDepth()) ;
+		System.out.println(cryptsy.getDepth(Markets.DOGE_BTC)) ;
 	}
 
 	@Test
