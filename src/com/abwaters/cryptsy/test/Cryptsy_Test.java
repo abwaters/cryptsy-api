@@ -14,6 +14,9 @@ import com.abwaters.cryptsy.Cryptsy.DepthReturn;
 import com.abwaters.cryptsy.Cryptsy.FeeReturn;
 import com.abwaters.cryptsy.Cryptsy.InfoReturn;
 import com.abwaters.cryptsy.Cryptsy.Market;
+import com.abwaters.cryptsy.Cryptsy.MarketBuyOrder;
+import com.abwaters.cryptsy.Cryptsy.MarketOrderReturn;
+import com.abwaters.cryptsy.Cryptsy.MarketSellOrder;
 import com.abwaters.cryptsy.Cryptsy.Markets;
 import com.abwaters.cryptsy.Cryptsy.Order;
 import com.abwaters.cryptsy.Cryptsy.OrderTypes;
@@ -21,6 +24,7 @@ import com.abwaters.cryptsy.Cryptsy.PriceQuantity;
 import com.abwaters.cryptsy.Cryptsy.PublicMarket;
 import com.abwaters.cryptsy.Cryptsy.PublicTrade;
 import com.abwaters.cryptsy.Cryptsy.Trade;
+import com.abwaters.cryptsy.Cryptsy.Transaction;
 
 public class Cryptsy_Test {
 
@@ -92,22 +96,35 @@ public class Cryptsy_Test {
 		}
 	}
 
-	/* TODO */
 	@Test
 	public void testGetMyTransactions() throws CryptsyException {
-		System.out.println(cryptsy.getMyTransactions()) ;
+		Transaction[] transactions = cryptsy.getMyTransactions() ;
+		for(Transaction t:transactions) {
+			System.out.println(t) ;
+		}
 	}
 
-	/* TODO */
 	@Test
 	public void testGetMarketTrades() throws CryptsyException {
-		System.out.println(cryptsy.getMarketTrades(Markets.WDC_BTC)) ;
+		Trade[] trades = cryptsy.getMarketTrades(Markets.DOGE_BTC) ;
+		for (Trade trade : trades) {
+			System.out.println("    " + trade);
+		}
 	}
 
-	/* TODO */
 	@Test
 	public void testGetMarketOrders() throws CryptsyException {
-		System.out.println(cryptsy.getMarketOrders(Markets.WDC_BTC)) ;
+		MarketOrderReturn mo = cryptsy.getMarketOrders(Markets.WDC_BTC) ;
+		System.out.println("Sell Orders") ;
+		for(MarketSellOrder so:mo.sellorders) {
+			System.out.println(so) ; 
+		}
+		
+		System.out.println("Buy Orders") ;
+		for(MarketBuyOrder bo:mo.buyorders) {
+			System.out.println(bo) ; 
+		}
+
 	}
 
 	@Test
@@ -196,7 +213,6 @@ public class Cryptsy_Test {
 		System.out.println("sell="+sellfee) ;
 	}
 
-	/* TODO */
 	@Test
 	public void testGenerateNewAddress() throws CryptsyException {
 		String results = cryptsy.generateNewAddress(Currencies.AlphaCoin) ;

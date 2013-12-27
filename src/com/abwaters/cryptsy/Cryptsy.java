@@ -128,20 +128,27 @@ public class Cryptsy {
 		return acct_market.markets ;
 	}
 
-	public String getMyTransactions() throws CryptsyException {
-		return authrequest("mytransactions", null);
+	public Transaction[] getMyTransactions() throws CryptsyException {
+		String results = authrequest("mytransactions", null);
+		Transactions t = gson.fromJson(results,Transactions.class);
+		return t.transactions ;
 	}
 
-	public String getMarketTrades(int market_id) throws CryptsyException {
+	public Trade[] getMarketTrades(int market_id) throws CryptsyException {
 		Map<String,String> args = new HashMap<String,String>() ;
 		args.put("marketid",Integer.toString(market_id)) ;
-		return authrequest("markettrades", args);
+		String results = authrequest("markettrades", args);
+		Trades trades = gson.fromJson(results,Trades.class) ;
+		
+		// provide a complete structure by setting the market id
+		for(int i=0;i<trades.trades.length;i++) trades.trades[i].marketid = market_id ;
+		return trades.trades ;
 	}
 
 	public MarketOrderReturn getMarketOrders(int market_id) throws CryptsyException {
 		Map<String,String> args = new HashMap<String,String>() ;
 		args.put("marketid",Integer.toString(market_id)) ;
-		String results = authrequest("marketorders", args); 
+		String results = authrequest("marketorders", args);
 		MarketOrder mo = gson.fromJson(results,MarketOrder.class) ;
 		return mo.info ; 
 	}
@@ -155,12 +162,11 @@ public class Cryptsy {
 		args.put("marketid",Integer.toString(market_id)) ;
 		args.put("limit",Integer.toString(limit)) ;
 		String results = authrequest("mytrades", args);
-		MyTrades mt = gson.fromJson(results,MyTrades.class) ;
+		Trades trades = gson.fromJson(results,Trades.class) ;
 		
 		// provide a complete structure by setting the market id
-		for(int i=0;i<mt.trades.length;i++) mt.trades[i].marketid = market_id ;
-		
-		return mt.trades ;
+		for(int i=0;i<trades.trades.length;i++) trades.trades[i].marketid = market_id ;
+		return trades.trades ;
 	}
 	
 	/*
@@ -168,8 +174,8 @@ public class Cryptsy {
 	 */
 	public Trade[] getAllMyTrades() throws CryptsyException {
 		String results = authrequest("allmytrades", null);
-		MyTrades mt = gson.fromJson(results,MyTrades.class) ;
-		return mt.trades ;
+		Trades trades = gson.fromJson(results,Trades.class) ;
+		return trades.trades ;
 	}
 
 	public Order[] getMyOrders(int market_id) throws CryptsyException {
@@ -505,6 +511,33 @@ public class Cryptsy {
 		public String address ;
 	}
 	
+	public static class Transactions extends Results {
+		@SerializedName("return")
+		public Transaction[] transactions ;
+	}
+	
+	public static class Transaction {
+		public String currency ;
+		public long timestamp ;
+		public Date datetime ;
+		public String timezone ;
+		public String type ;
+		public String address ;
+		public double amount ;
+		public double fee ;
+		public String trxid ;
+		
+		@Override
+		public String toString() {
+			return "Transaction [currency=" + currency + ", timestamp="
+					+ timestamp + ", datetime=" + datetime + ", timezone="
+					+ timezone + ", type=" + type + ", address=" + address
+					+ ", amount=" + amount + ", fee=" + fee + ", trxid="
+					+ trxid + "]";
+		}
+		
+	}
+	
 	public static class PublicMarketData extends Results {
 		@SerializedName("return")
 		public PublicMarketDataReturn info;
@@ -522,7 +555,7 @@ public class Cryptsy {
 	/*
 	 * 
 	 */
-	public static class MyTrades extends Results {
+	public static class Trades extends Results {
 		@SerializedName("return")
 		public Trade[] trades ;
 	}
