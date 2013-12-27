@@ -9,7 +9,9 @@ import org.junit.Test;
 
 import com.abwaters.cryptsy.Cryptsy;
 import com.abwaters.cryptsy.Cryptsy.CryptsyException;
+import com.abwaters.cryptsy.Cryptsy.Currencies;
 import com.abwaters.cryptsy.Cryptsy.DepthReturn;
+import com.abwaters.cryptsy.Cryptsy.FeeReturn;
 import com.abwaters.cryptsy.Cryptsy.InfoReturn;
 import com.abwaters.cryptsy.Cryptsy.Market;
 import com.abwaters.cryptsy.Cryptsy.Markets;
@@ -124,7 +126,6 @@ public class Cryptsy_Test {
 		}
 	}
 
-	/* TODO */
 	@Test
 	public void testGetMyOrders() throws CryptsyException {
 		Order[] orders = cryptsy.getMyOrders(Markets.DOGE_BTC) ;
@@ -146,7 +147,6 @@ public class Cryptsy_Test {
 		}
 	}
 
-	/* TODO */
 	@Test
 	public void testGetAllMyOrders() throws CryptsyException {
 		Order[] orders = cryptsy.getAllMyOrders() ;
@@ -155,38 +155,51 @@ public class Cryptsy_Test {
 		}
 	}
 
-	/* TODO */
 	@Test
 	public void testCreateOrder() throws CryptsyException {
-		System.out.println(cryptsy.createOrder(Markets.DOGE_BTC,OrderTypes.Sell, 500, 0.000001)) ;
+		System.out.println("orderid="+cryptsy.createOrder(Markets.DOGE_BTC,OrderTypes.Sell, 500, 0.000001)) ;
+		System.out.println("orderid="+cryptsy.createOrder(Markets.DOGE_BTC,OrderTypes.Sell, 500, 0.000001)) ;
+		System.out.println("orderid="+cryptsy.createOrder(Markets.DOGE_BTC,OrderTypes.Sell, 500, 0.000001)) ;
 	}
 
-	/* TODO */
 	@Test
 	public void testCancelOrder() throws CryptsyException {
-		long order_id = 23314959 ;
+		long order_id = 23625768 ;
 		System.out.println(cryptsy.cancelOrder(order_id)) ;
 	}
 
-	/* TODO */
 	@Test
 	public void testCancelMarketOrders() throws CryptsyException {
-		System.out.println(cryptsy.cancelMarketOrders(Markets.DOGE_BTC)) ;
+		long[] orderids = cryptsy.cancelMarketOrders(Markets.DOGE_BTC) ;
+		if( orderids == null || orderids.length == 0 ) {
+			System.out.println("No orders to cancel.") ;
+		}else for(long orderid:orderids) {
+			System.out.println("Canceled #"+orderid) ;
+		}
 	}
 
-	/* TODO */
 	@Test
 	public void testCancelAllOrders() throws CryptsyException {
-		System.out.println(cryptsy.cancelAllOrders()) ;
+		long[] orderids = cryptsy.cancelAllOrders() ;
+		if( orderids == null || orderids.length == 0 ) {
+			System.out.println("No orders to cancel.") ;
+		}else for(long orderid:orderids) {
+			System.out.println("Canceled #"+orderid) ;
+		}
 	}
 
-	/* TODO */
 	@Test
 	public void testCalculateFees() throws CryptsyException {
+		FeeReturn buyfee = cryptsy.calculateFees(OrderTypes.Buy, 1, 1) ;
+		FeeReturn sellfee = cryptsy.calculateFees(OrderTypes.Sell, 1, 1) ;
+		System.out.println("buy="+buyfee) ;
+		System.out.println("sell="+sellfee) ;
 	}
 
 	/* TODO */
 	@Test
 	public void testGenerateNewAddress() throws CryptsyException {
+		String results = cryptsy.generateNewAddress(Currencies.AlphaCoin) ;
+		System.out.println(results) ;
 	}
 }

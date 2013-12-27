@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -214,32 +216,57 @@ public class Cryptsy {
 		args.put("orderid",Long.toString(order_id)) ;
 		String results = authrequest("cancelorder", args);
 		StringResults r = gson.fromJson(results,StringResults.class) ;
-		System.out.println(r.info); 
 		return (r.success == 1) ;
 	}
 
-	public String cancelMarketOrders(int market_id) throws CryptsyException {
+	public long[] cancelMarketOrders(int market_id) throws CryptsyException {
 		Map<String,String> args = new HashMap<String,String>() ;
 		args.put("marketid",Integer.toString(market_id)) ;
-		return authrequest("cancelmarketorders", args);
+		String results = authrequest("cancelmarketorders", args);
+		StringArrayResults r = gson.fromJson(results,StringArrayResults.class) ;
+		long[] orderids = null ;
+		if( r.success == 1 && r.info != null ) {
+			orderids = new long[r.info.length] ;
+			Pattern p = Pattern.compile("(\\d+)");
+			for(int i=0;i<orderids.length;i++) {
+				Matcher m = p.matcher(r.info[i]) ;
+				if( m.find() ) orderids[i] = Long.parseLong(m.group(0)) ;
+			}
+		}
+		return orderids ; 
 	}
 
-	public String cancelAllOrders() throws CryptsyException {
-		return authrequest("cancelallorders", null);
+	public long[] cancelAllOrders() throws CryptsyException {
+		String results = authrequest("cancelallorders", null);
+		StringArrayResults r = gson.fromJson(results,StringArrayResults.class) ;
+		long[] orderids = null ;
+		if( r.success == 1 && r.info != null ) {
+			orderids = new long[r.info.length] ;
+			Pattern p = Pattern.compile("(\\d+)");
+			for(int i=0;i<orderids.length;i++) {
+				Matcher m = p.matcher(r.info[i]) ;
+				if( m.find() ) orderids[i] = Long.parseLong(m.group(0)) ;
+			}
+		}
+		return orderids ; 
 	}
 
-	public String calculateFees(String order_type,double quantity,double price) throws CryptsyException {
+	public FeeReturn calculateFees(String order_type,double quantity,double price) throws CryptsyException {
 		Map<String,String> args = new HashMap<String,String>() ;
-		args.put("order_type",order_type) ;
+		args.put("ordertype",order_type) ;
 		args.put("quantity",Double.toString(quantity)) ;
 		args.put("price",Double.toString(price)) ;
-		return authrequest("calculatefees", args);
+		String results = authrequest("calculatefees", args);
+		CalculateFees fees = gson.fromJson(results, CalculateFees.class) ;
+		return fees.info ;
 	}
 
 	public String generateNewAddress(String currencycode) throws CryptsyException {
 		Map<String,String> args = new HashMap<String,String>() ;
 		args.put("currencycode",currencycode) ;
-		return authrequest("generatenewaddress", args);
+		String results = authrequest("generatenewaddress", args);
+		GenerateAddress adr = gson.fromJson(results,GenerateAddress.class) ;
+		return adr.info.address ;
 	}
 
 	/**
@@ -449,6 +476,35 @@ public class Cryptsy {
 		public String info ;
 	}
 
+	public static class StringArrayResults extends Results {
+		@SerializedName("return")
+		public String[] info ;
+	}
+	
+	public static class CalculateFees extends Results {
+		@SerializedName("return")
+		public FeeReturn info ;
+	}
+	
+	public static class FeeReturn {
+		public double fee ;
+		public double net ;
+		
+		@Override
+		public String toString() {
+			return "FeeReturn [fee=" + fee + ", net=" + net + "]";
+		}
+	}
+
+	public static class GenerateAddress extends Results {
+		@SerializedName("return")
+		public AddressReturn info ;
+	}
+	
+	public static class AddressReturn {
+		public String address ;
+	}
+	
 	public static class PublicMarketData extends Results {
 		@SerializedName("return")
 		public PublicMarketDataReturn info;
