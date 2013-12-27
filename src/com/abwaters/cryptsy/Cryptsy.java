@@ -16,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,6 +29,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -66,6 +68,7 @@ public class Cryptsy {
 		gson_builder.registerTypeAdapter(Balances.class,
 				new BalancesDeserializer());
 		gson_builder.registerTypeAdapter(Date.class, new DateDeserializer());
+		gson_builder.registerTypeAdapter(DepthReturn.class, new DepthDeserializer());
 		gson = gson_builder.create();
 		if (nonce == 0)
 			nonce = System.currentTimeMillis() / 1000;
@@ -111,9 +114,6 @@ public class Cryptsy {
 				+ market_id);
 	}
 
-	/*
-	  * 
-	  */
 	public InfoReturn getInfo() throws CryptsyException {
 		String results = authrequest("getinfo", null);
 		Info info = gson.fromJson(results, Info.class);
@@ -130,58 +130,116 @@ public class Cryptsy {
 		return authrequest("mytransactions", null);
 	}
 
-	public String getMarketTrades() throws CryptsyException {
-		return authrequest("markettrades", null);
-	}
-
-	public String getMarketOrders() throws CryptsyException {
-		return authrequest("marketorders", null);
-	}
-
-	public String getMyTrades() throws CryptsyException {
-		return authrequest("mytrades", null);
-	}
-
-	public String getAllMyTrades() throws CryptsyException {
-		return authrequest("allmytrades", null);
-	}
-
-	public String getMyOrders() throws CryptsyException {
-		return authrequest("myorders", null);
-	}
-
-	public String getDepth(int marketid) throws CryptsyException {
+	public String getMarketTrades(int market_id) throws CryptsyException {
 		Map<String,String> args = new HashMap<String,String>() ;
-		args.put("marketid",Integer.toString(marketid)) ;
-		return authrequest("depth", args);
+		args.put("marketid",Integer.toString(market_id)) ;
+		return authrequest("markettrades", args);
 	}
 
-	public String getAllMyOrders() throws CryptsyException {
-		return authrequest("allmyorders", null);
+	public MarketOrderReturn getMarketOrders(int market_id) throws CryptsyException {
+		Map<String,String> args = new HashMap<String,String>() ;
+		args.put("marketid",Integer.toString(market_id)) ;
+		String results = authrequest("marketorders", args); 
+		MarketOrder mo = gson.fromJson(results,MarketOrder.class) ;
+		return mo.info ; 
 	}
 
-	public String createOrder() throws CryptsyException {
-		return authrequest("createorder", null);
+	/*
+	 * Returns trades from a given market for limit entries.
+	 */
+	public Trade[] getMyTrades(int market_id,int limit) throws CryptsyException {
+		
+		Map<String,String> args = new HashMap<String,String>() ;
+		args.put("marketid",Integer.toString(market_id)) ;
+		args.put("limit",Integer.toString(limit)) ;
+		String results = authrequest("mytrades", args);
+		MyTrades mt = gson.fromJson(results,MyTrades.class) ;
+		
+		// provide a complete structure by setting the market id
+		for(int i=0;i<mt.trades.length;i++) mt.trades[i].marketid = market_id ;
+		
+		return mt.trades ;
+	}
+	
+	/*
+	 * Returns all trades for all markets. 
+	 */
+	public Trade[] getAllMyTrades() throws CryptsyException {
+		String results = authrequest("allmytrades", null);
+		MyTrades mt = gson.fromJson(results,MyTrades.class) ;
+		return mt.trades ;
 	}
 
-	public String cancelOrder() throws CryptsyException {
-		return authrequest("cancelorder", null);
+	public Order[] getMyOrders(int market_id) throws CryptsyException {
+		Map<String,String> args = new HashMap<String,String>() ;
+		args.put("marketid",Integer.toString(market_id)) ;
+		String results = authrequest("myorders", args);
+		MyOrders mo = gson.fromJson(results,MyOrders.class) ;
+		for(int i=0;i<mo.orders.length;i++) {
+			mo.orders[i].marketid = market_id ;
+		}
+		return mo.orders ;
 	}
 
-	public String cancelMarketOrders() throws CryptsyException {
-		return authrequest("cancelmarketorders", null);
+	public DepthReturn getDepth(int market_id) throws CryptsyException {
+		Map<String,String> args = new HashMap<String,String>() ;
+		args.put("marketid",Integer.toString(market_id)) ;
+		String results = authrequest("depth", args);
+		Depth depth = gson.fromJson(results, Depth.class) ;
+		return depth.info ;
+	}
+
+	public Order[] getAllMyOrders() throws CryptsyException {
+		String results = authrequest("allmyorders", null);
+		MyOrders mo = gson.fromJson(results,MyOrders.class) ;
+		return mo.orders ;
+	}
+
+	/*
+	 * order_type - Buy/Sell
+	 */
+	public long createOrder(int market_id,String order_type,double quantity,double price) throws CryptsyException {
+		Map<String,String> args = new HashMap<String,String>() ;
+		args.put("marketid",Integer.toString(market_id)) ;
+		args.put("ordertype",order_type) ;
+		args.put("quantity",Double.toString(quantity)) ;
+		args.put("price",Double.toString(price)) ;
+		String results = authrequest("createorder", args);
+		CreateOrder co = gson.fromJson(results,CreateOrder.class) ;
+		return (co.success == 1)?co.orderid:0 ;
+	}
+
+	public boolean cancelOrder(long order_id) throws CryptsyException {
+		Map<String,String> args = new HashMap<String,String>() ;
+		args.put("orderid",Long.toString(order_id)) ;
+		String results = authrequest("cancelorder", args);
+		StringResults r = gson.fromJson(results,StringResults.class) ;
+		System.out.println(r.info); 
+		return (r.success == 1) ;
+	}
+
+	public String cancelMarketOrders(int market_id) throws CryptsyException {
+		Map<String,String> args = new HashMap<String,String>() ;
+		args.put("marketid",Integer.toString(market_id)) ;
+		return authrequest("cancelmarketorders", args);
 	}
 
 	public String cancelAllOrders() throws CryptsyException {
 		return authrequest("cancelallorders", null);
 	}
 
-	public String calculateFees() throws CryptsyException {
-		return authrequest("calculatefees", null);
+	public String calculateFees(String order_type,double quantity,double price) throws CryptsyException {
+		Map<String,String> args = new HashMap<String,String>() ;
+		args.put("order_type",order_type) ;
+		args.put("quantity",Double.toString(quantity)) ;
+		args.put("price",Double.toString(price)) ;
+		return authrequest("calculatefees", args);
 	}
 
-	public String generateNewAddress() throws CryptsyException {
-		return authrequest("generatenewaddress", null);
+	public String generateNewAddress(String currencycode) throws CryptsyException {
+		Map<String,String> args = new HashMap<String,String>() ;
+		args.put("currencycode",currencycode) ;
+		return authrequest("generatenewaddress", args);
 	}
 
 	/**
@@ -385,6 +443,11 @@ public class Cryptsy {
 			error = "";
 		}
 	}
+	
+	public static class StringResults extends Results {
+		@SerializedName("return")
+		public String info ;
+	}
 
 	public static class PublicMarketData extends Results {
 		@SerializedName("return")
@@ -399,10 +462,118 @@ public class Cryptsy {
 		@SerializedName("return")
 		public Market[] markets ;
 	}
+
+	/*
+	 * 
+	 */
+	public static class MyTrades extends Results {
+		@SerializedName("return")
+		public Trade[] trades ;
+	}
 	
 	public static class Balances extends HashMap<String, Double> {
 	}
 
+	public static class PriceQuantity {
+		public double price ;
+		public double quantity ;
+		@Override
+		public String toString() {
+			return "PriceQuantity [price=" + price + ", quantity=" + quantity
+					+ "]";
+		}
+	}
+	
+	public static class Depth extends Results {
+		@SerializedName("return")
+		public DepthReturn info ;
+	}
+	
+	public static class DepthReturn {
+		public PriceQuantity[] sell ;
+		public PriceQuantity[] buy ;
+	}
+	
+	public static class MarketOrder extends Results {
+		@SerializedName("return")
+		public MarketOrderReturn info ;
+
+		@Override
+		public String toString() {
+			return "MarketOrder [info=" + info + "]";
+		}
+	}
+	
+	public static class MarketOrderReturn {
+		public MarketSellOrder[] sellorders ;
+		public MarketBuyOrder[] buyorders ;
+		@Override
+		public String toString() {
+			return "MarketOrderReturn [sellorders="
+					+ Arrays.toString(sellorders) + ", buyorders="
+					+ Arrays.toString(buyorders) + "]";
+		}
+	}
+	
+	public static class MarketBuyOrder {
+		public double buyprice ;
+		public double quantity ;
+		public double total ;
+		
+		@Override
+		public String toString() {
+			return "MarketBuyOrder [buyprice=" + buyprice + ", quantity="
+					+ quantity + ", total=" + total + "]";
+		}
+	}
+	
+	public static class MarketSellOrder {
+		public double sellprice ;
+		public double quantity ;
+		public double total ;
+		
+		@Override
+		public String toString() {
+			return "MarketSellOrder [sellprice=" + sellprice + ", quantity="
+					+ quantity + ", total=" + total + "]";
+		}
+	}
+
+	public static class MyOrders extends Results {
+		@SerializedName("return")
+		public Order[] orders ;
+
+		@Override
+		public String toString() {
+			return "MyOrders [orders=" + Arrays.toString(orders) + "]";
+		}
+	}
+	
+	public static class CreateOrder extends Results {
+		public long orderid ;
+		public String moreinfo ;
+	}
+	
+	public static class Order {
+		public long orderid ;
+		public Date created ;
+		public int marketid ;
+		public String ordertype ;
+		public double price ;
+		public double quantity ;
+		public double orig_quantity ;
+		public double total ;
+		
+		@Override
+		public String toString() {
+			return "Order [orderid=" + orderid + ", created=" + created
+					+ ", marketid=" + marketid + ", ordertype=" + ordertype
+					+ ", price=" + price + ", quantity=" + quantity
+					+ ", orig_quantity=" + orig_quantity + ", total=" + total
+					+ "]";
+		}
+	}
+	
 	public static class Info extends Results {
 		@SerializedName("return")
 		public InfoReturn info;
@@ -492,10 +663,41 @@ public class Cryptsy {
 		}
 	}
 
+	/**
+	 * 
+	 */
+	private class DepthDeserializer implements JsonDeserializer<DepthReturn> {
+		public DepthReturn deserialize(JsonElement json, Type typeOfT,
+				JsonDeserializationContext context) throws JsonParseException {
+			DepthReturn depth = new DepthReturn() ;
+			if (json.isJsonObject() ) {
+				JsonObject o = json.getAsJsonObject() ;
+				JsonArray asell = o.getAsJsonArray("sell") ;
+				JsonArray abuy = o.getAsJsonArray("buy") ;
+				depth.sell = convertToPriceQuantityArray(asell) ;
+				depth.buy = convertToPriceQuantityArray(abuy) ;
+			}
+			return depth ;
+		}
+	}
+	
+	private PriceQuantity[] convertToPriceQuantityArray(JsonArray pqa) {
+		List<PriceQuantity> pqlist = new ArrayList<PriceQuantity>() ;
+		int cnt = pqa.size();
+		for(int i=0;i<cnt;i++) {
+			PriceQuantity pq = new PriceQuantity() ;
+			JsonArray va = pqa.get(i).getAsJsonArray() ;
+			pq.price = va.get(0).getAsDouble() ;
+			pq.quantity = va.get(1).getAsDouble() ;
+			pqlist.add(pq) ;
+		}
+		return pqlist.toArray(new PriceQuantity[0]) ;
+	}
+
 	/*
 	 * Trade data
 	 */
-	public static class Trade {
+	public static class PublicTrade {
 		public long id;
 		public Date time;
 		public double price;
@@ -551,7 +753,7 @@ public class Cryptsy {
 		public String primarycode;
 		public String secondaryname;
 		public String secondarycode;
-		public Trade[] recenttrades;
+		public PublicTrade[] recenttrades;
 
 		@Override
 		public String toString() {
@@ -563,6 +765,40 @@ public class Cryptsy {
 		}
 	}
 
+	/*
+	 * 
+	 */
+	public static class Trade {
+		public long tradeid ;
+		public String tradetype ;
+		public Date datetime ;
+		public int marketid ;
+		public double tradeprice ;
+		public double quantity ;
+		public double fee ;
+		public double total ;
+		public String initiate_ordertype ;
+		public long order_id ;
+		@Override
+		public String toString() {
+			return "Trade [tradeid=" + tradeid + ", tradetype=" + tradetype
+					+ ", datetime=" + datetime + ", marketid=" + marketid
+					+ ", tradeprice=" + tradeprice + ", quantity=" + quantity
+					+ ", fee=" + fee + ", total=" + total
+					+ ", initiate_ordertype=" + initiate_ordertype
+					+ ", order_id=" + order_id + "]";
+		}
+		
+	}
+
+	/*
+	 * 
+	 */
+	public static class OrderTypes {
+		public static final String Sell = "Sell" ;
+		public static final String Buy = "Buy" ;
+	}
+	
 	/*
 	 * Currencies
 	 */

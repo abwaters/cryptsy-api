@@ -9,10 +9,15 @@ import org.junit.Test;
 
 import com.abwaters.cryptsy.Cryptsy;
 import com.abwaters.cryptsy.Cryptsy.CryptsyException;
+import com.abwaters.cryptsy.Cryptsy.DepthReturn;
 import com.abwaters.cryptsy.Cryptsy.InfoReturn;
 import com.abwaters.cryptsy.Cryptsy.Market;
 import com.abwaters.cryptsy.Cryptsy.Markets;
+import com.abwaters.cryptsy.Cryptsy.Order;
+import com.abwaters.cryptsy.Cryptsy.OrderTypes;
+import com.abwaters.cryptsy.Cryptsy.PriceQuantity;
 import com.abwaters.cryptsy.Cryptsy.PublicMarket;
+import com.abwaters.cryptsy.Cryptsy.PublicTrade;
 import com.abwaters.cryptsy.Cryptsy.Trade;
 
 public class Cryptsy_Test {
@@ -56,7 +61,7 @@ public class Cryptsy_Test {
 	public void testPublicSingleMarketData() throws CryptsyException {
 		PublicMarket market = cryptsy.getPublicMarketData(Markets.LTC_BTC);
 		System.out.println(market);
-		for (Trade trade : market.recenttrades) {
+		for (PublicTrade trade : market.recenttrades) {
 			System.out.println("    " + trade);
 		}
 	}
@@ -85,66 +90,102 @@ public class Cryptsy_Test {
 		}
 	}
 
+	/* TODO */
 	@Test
 	public void testGetMyTransactions() throws CryptsyException {
 		System.out.println(cryptsy.getMyTransactions()) ;
 	}
 
+	/* TODO */
 	@Test
 	public void testGetMarketTrades() throws CryptsyException {
-		System.out.println(cryptsy.getMarketTrades()) ;
+		System.out.println(cryptsy.getMarketTrades(Markets.WDC_BTC)) ;
 	}
 
+	/* TODO */
 	@Test
 	public void testGetMarketOrders() throws CryptsyException {
-		System.out.println(cryptsy.getMarketOrders()) ;
+		System.out.println(cryptsy.getMarketOrders(Markets.WDC_BTC)) ;
 	}
 
 	@Test
 	public void testGetMyTrades() throws CryptsyException {
-		System.out.println(cryptsy.getMyTrades()) ;
+		Trade[] trades = cryptsy.getMyTrades(Markets.WDC_BTC,200) ;
+		for (Trade trade : trades) {
+			System.out.println("    " + trade);
+		}
 	}
 
 	@Test
 	public void testGetAllMyTrades() throws CryptsyException {
-		System.out.println(cryptsy.getAllMyTrades()) ;
+		Trade[] trades = cryptsy.getAllMyTrades() ;
+		for (Trade trade : trades) {
+			System.out.println("    " + trade);
+		}
 	}
 
+	/* TODO */
 	@Test
 	public void testGetMyOrders() throws CryptsyException {
-		System.out.println(cryptsy.getMyOrders()) ;
+		Order[] orders = cryptsy.getMyOrders(Markets.DOGE_BTC) ;
+		for(Order order:orders) {
+			System.out.println(order) ;
+		}
 	}
 
 	@Test
 	public void testGetDepth() throws CryptsyException {
-		System.out.println(cryptsy.getDepth(Markets.DOGE_BTC)) ;
+		DepthReturn depth = cryptsy.getDepth(Markets.WDC_BTC) ; 
+		System.out.println("Sell Depth") ;
+		for(PriceQuantity pq:depth.sell) {
+			System.out.println(pq) ; 
+		}
+		System.out.println("Buy Depth") ;
+		for(PriceQuantity pq:depth.buy) {
+			System.out.println(pq) ; 
+		}
 	}
 
+	/* TODO */
 	@Test
 	public void testGetAllMyOrders() throws CryptsyException {
-		System.out.println(cryptsy.getAllMyOrders()) ;
+		Order[] orders = cryptsy.getAllMyOrders() ;
+		for(Order order:orders) {
+			System.out.println(order) ;
+		}
 	}
 
+	/* TODO */
 	@Test
 	public void testCreateOrder() throws CryptsyException {
+		System.out.println(cryptsy.createOrder(Markets.DOGE_BTC,OrderTypes.Sell, 500, 0.000001)) ;
 	}
 
+	/* TODO */
 	@Test
 	public void testCancelOrder() throws CryptsyException {
+		long order_id = 23314959 ;
+		System.out.println(cryptsy.cancelOrder(order_id)) ;
 	}
 
+	/* TODO */
 	@Test
 	public void testCancelMarketOrders() throws CryptsyException {
+		System.out.println(cryptsy.cancelMarketOrders(Markets.DOGE_BTC)) ;
 	}
 
+	/* TODO */
 	@Test
 	public void testCancelAllOrders() throws CryptsyException {
+		System.out.println(cryptsy.cancelAllOrders()) ;
 	}
 
+	/* TODO */
 	@Test
 	public void testCalculateFees() throws CryptsyException {
 	}
 
+	/* TODO */
 	@Test
 	public void testGenerateNewAddress() throws CryptsyException {
 	}
