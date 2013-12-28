@@ -2,10 +2,14 @@ package com.abwaters.cryptsy.test;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import sun.util.resources.CurrencyNames;
 
 import com.abwaters.cryptsy.Cryptsy;
 import com.abwaters.cryptsy.Cryptsy.CryptsyException;
@@ -53,6 +57,51 @@ public class Cryptsy_Test {
 		cryptsy.setAuthKeys(key, secret);
 		cryptsy.setAuthRequestLimit(auth_request_limit);
 		cryptsy.setRequestLimit(request_limit);
+	}
+	
+	@Test
+	public void testAllCurrencies() throws CryptsyException {
+		Map<String,String> currencies = new HashMap<String,String>() ;
+		PublicMarket[] markets = cryptsy.getPublicMarketData();
+		for(PublicMarket market:markets) {
+			if( !currencies.containsKey(market.primarycode) )
+				currencies.put(market.primarycode,market.primaryname) ;
+			else if( !currencies.containsKey(market.secondarycode) )
+				currencies.put(market.secondarycode,market.secondaryname) ;
+		}
+		for(String currency:currencies.keySet()) {
+			System.out.println("CurrencyNames.put(\""+currency+"\",\""+currencies.get(currency)+"\") ;") ;
+		}
+	}
+	
+	@Test
+	public void testAccountAddresses() throws CryptsyException {
+		PublicMarket[] markets = cryptsy.getPublicMarketData();
+		Transaction[] txns = cryptsy.getMyTransactions() ;
+		Map<String,String> addresses = new HashMap<String,String>() ;
+		for(Transaction tx:txns) {
+			if( tx.type.equalsIgnoreCase("Deposit") ) {
+				if( !addresses.containsKey(tx.currency) ) addresses.put(tx.currency, tx.address) ;
+			}
+		}
+		InfoReturn info = cryptsy.getInfo();
+		for (String currency : info.balances_available.keySet()) {
+			if( !currency.equalsIgnoreCase("points") ) {
+				double val = info.balances_available.get(currency);
+				if( !addresses.containsKey(currency) ) {
+					try {
+						String address = cryptsy.generateNewAddress(currency) ;
+						addresses.put(currency, address) ;
+					}catch(Exception e) {
+						System.out.println("Error generating address for "+currency) ;
+					}
+				}
+			}
+		}
+		for(String currency:addresses.keySet()) {
+			String currencyName = Cryptsy.CurrencyNames.get(currency) ;
+			System.out.println(currencyName+" ("+currency+"): "+addresses.get(currency)) ;
+		}
 	}
 	
 	@Test
