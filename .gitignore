@@ -1,9 +1,9 @@
 *.class
 
 # Package Files #
-*.jar
 *.war
 *.ear
 
 # project files
 config.properties
+.DS_Store
