@@ -118,7 +118,7 @@ public class Cryptsy_Test {
 				else{
 					for(PublicMarket market:markets) { 
 						if( market.primarycode.equalsIgnoreCase(currency) && market.secondarycode.equalsIgnoreCase(Currencies.BitCoin) ) {
-							btc_val = market.recenttrades[0].price ; 
+							btc_val = market.recenttrades[0].price * val ; 
 						}
 					}
 				}
@@ -139,7 +139,7 @@ public class Cryptsy_Test {
 
 	@Test
 	public void testPublicSingleMarketData() throws CryptsyException {
-		PublicMarket market = cryptsy.getPublicMarketData(Markets.LTC_BTC);
+		PublicMarket market = cryptsy.getPublicMarketData(Markets.DOGE_BTC);
 		System.out.println(market);
 		for (PublicTrade trade : market.recenttrades) {
 			System.out.println("    " + trade);
