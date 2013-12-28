@@ -547,7 +547,7 @@ public class Cryptsy {
 		public PublicMarket[] markets;
 	}
 
-	public static class AccountMarkets extends Results {
+	private static class AccountMarkets extends Results {
 		@SerializedName("return")
 		public Market[] markets ;
 	}

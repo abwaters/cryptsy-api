@@ -29,7 +29,7 @@ import com.abwaters.cryptsy.Cryptsy.Transaction;
 public class Cryptsy_Test {
 
 	private Cryptsy cryptsy;
-
+	
 	private static Properties load(File pfile) throws Exception {
 		FileInputStream pfs = new FileInputStream(pfile.getAbsoluteFile());
 		Properties properties = new Properties();
@@ -53,6 +53,31 @@ public class Cryptsy_Test {
 		cryptsy.setAuthKeys(key, secret);
 		cryptsy.setAuthRequestLimit(auth_request_limit);
 		cryptsy.setRequestLimit(request_limit);
+	}
+	
+	@Test
+	public void testAccountTotalBTC() throws CryptsyException {
+		double total = 0 ;
+		PublicMarket[] markets = cryptsy.getPublicMarketData();
+		InfoReturn info = cryptsy.getInfo();
+		System.out.println(info) ;
+		for (String currency : info.balances_available.keySet()) {
+			double val = info.balances_available.get(currency);
+			if (val > 0) {
+				double btc_val = 0 ;
+				if( currency.equalsIgnoreCase(Currencies.BitCoin) ) btc_val = val ;
+				else{
+					for(PublicMarket market:markets) { 
+						if( market.primarycode.equalsIgnoreCase(currency) && market.secondarycode.equalsIgnoreCase(Currencies.BitCoin) ) {
+							btc_val = market.recenttrades[0].price ; 
+						}
+					}
+				}
+				System.out.println("    Available " + currency + "=" + val + " BTC val="+btc_val) ;
+				total += btc_val ;
+			}
+		}
+		System.out.println("Account Total="+total+" BTC") ;
 	}
 
 	@Test
