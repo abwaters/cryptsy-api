@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="javadoc">
     <target name="javadoc">
-        <javadoc access="public" author="true" classpath="/Applications/eclipse/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar:/Applications/eclipse/plugins/org.junit_4.10.0.v4_10_0_v20120426-0900/junit.jar:lib/gson-2.2.4.jar" destdir="doc" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="com.abwaters.cryptsy.test,com.abwaters.cryptsy" source="1.7" sourcepath="src" splitindex="true" use="true" version="true"/>
+        <javadoc access="package" author="true" classpath="C:\eclipse\plugins\org.junit_4.8.2.v4_8_2_v20110321-1705\junit.jar;lib/gson-2.2.4.jar;C:\eclipse\plugins\org.hamcrest.core_1.1.0.v20090501071000.jar" destdir="doc" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="com.abwaters.cryptsy.test,com.abwaters.cryptsy" source="1.7" sourcepath="src" splitindex="true" use="true" version="true"/>
     </target>
 </project>
