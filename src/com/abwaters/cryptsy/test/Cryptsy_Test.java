@@ -105,6 +105,17 @@ public class Cryptsy_Test {
 	}
 	
 	@Test
+	public void testBTCExchangeRates() throws CryptsyException {
+		double total = 0 ;
+		PublicMarket[] markets = cryptsy.getPublicMarketData();
+		for(PublicMarket market:markets) { 
+			if( market.secondarycode.equalsIgnoreCase(Currencies.BitCoin) ) {
+				System.out.println(market.primaryname + " ("+market.primarycode+") - "+String.format("%f",market.recenttrades[0].price)+ " BTC") ;
+			}
+		}
+	}
+
+	@Test
 	public void testAccountTotalBTC() throws CryptsyException {
 		double total = 0 ;
 		PublicMarket[] markets = cryptsy.getPublicMarketData();
