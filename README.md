@@ -15,7 +15,7 @@ cryptsy = new Cryptsy();
 cryptsy.setAuthKeys("<api_key>", "<api_secret>");
 ```
 
-After this, using the API is as simple as calling the appropriate method off of your `cryptsy` object.
+After this, using the API is as simple as calling the appropriate method off of your `cryptsy` object.  It is useful to look at the Cryptsy_Test.java source code since the unit tests in this file contain sample code for all of the APIs.  I'll be adding a complete javadoc in the near future.
 
 ## Examples
 
