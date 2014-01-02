@@ -1,6 +1,8 @@
 # cryptsy-api
 
-Small fast API for the Cryptsy crypto-currency exchange.
+Small fast (and complete) Java API for the Cryptsy crypto-currency exchange with minimal dependencies.  The only external library needed to use this API is the Google Gson library.
+
+Note: While the API is complete and functional in its current state, I am refining the naming conventions for the API and adding documentation.  This may require small but critical changes to your code if you upgrade to future versions.
 
 ## Installation
 
