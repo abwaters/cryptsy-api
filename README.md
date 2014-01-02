@@ -13,6 +13,7 @@ Create a Cryptsy API object using the following code:
 ```java
 cryptsy = new Cryptsy();
 cryptsy.setAuthKeys("<api_key>", "<api_secret>");
+```
 
 After this, using the API is as simple as calling the appropriate method off of your `cryptsy` object.
 
@@ -33,7 +34,7 @@ for (String currency : info.balances_hold.keySet()) {
 	if (val > 0)
 		System.out.println("    Hold " + currency + "=" + val);
 }
-
+```
 
 
 ## Donations
