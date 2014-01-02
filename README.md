@@ -1,7 +1,26 @@
-cryptsy-api
-===========
+# cryptsy-api
 
 Small fast API for the Cryptsy crypto-currency exchange.
+
+## Installation
+
+Add the file Cryptsy.java to your project and include the Gson jar as a reference.  Thats all thats needed.  The unit tests for this library use a properties file for saving the API keys but thats not a requirement.  The use of the properties file is only a requirement of the unit tests and not the API itself.
+
+## Basic Usage
+
+Create a Cryptsy API object using the following code:
+
+```java
+cryptsy = new Cryptsy();
+cryptsy.setAuthKeys("<api_key>", "<api_secret>");
+
+After this, using the API is as simple as calling the appropriate method off of your `cryptsy` object.
+
+## Examples
+
+
+
+## Donations
 
 If you use this library please donate to any of the following addresses:
 
