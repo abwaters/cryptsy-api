@@ -18,6 +18,22 @@ After this, using the API is as simple as calling the appropriate method off of 
 
 ## Examples
 
+Obtain account info including account balances and amounts on hold due to open orders:
+
+```java
+InfoReturn info = cryptsy.getInfo();
+System.out.println(info);
+for (String currency : info.balances_available.keySet()) {
+	double val = info.balances_available.get(currency);
+	if (val > 0)
+		System.out.println("    Available " + currency + "=" + val);
+}
+for (String currency : info.balances_hold.keySet()) {
+	double val = info.balances_hold.get(currency);
+	if (val > 0)
+		System.out.println("    Hold " + currency + "=" + val);
+}
+
 
 
 ## Donations
