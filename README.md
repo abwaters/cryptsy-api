@@ -47,6 +47,22 @@ for(Transaction t:transactions) {
 }
 ```
 
+### Get market orders for a single market
+Returns all the orders (order book) for a single currency market.
+
+```java
+MarketOrderReturn mo = cryptsy.getMarketOrders(Markets.WDC_BTC) ;
+System.out.println("Sell Orders") ;
+for(MarketSellOrder so:mo.sellorders) {
+	System.out.println(so) ; 
+}
+
+System.out.println("Buy Orders") ;
+for(MarketBuyOrder bo:mo.buyorders) {
+	System.out.println(bo) ; 
+}
+```
+
 ## Donations
 
 If you use this library please donate to any of the following addresses:
