@@ -2,6 +2,7 @@ package com.abwaters.cryptsy.test;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -80,22 +81,28 @@ public class Cryptsy_Test {
 				coin_names.put(market.secondaryname, market.secondarycode) ;
 		}
 
+		String[] keys = marketids.keySet().toArray(new String[0]) ;
+		Arrays.sort(keys) ;
 		System.out.println("public static class Markets {") ;
-		for(String k:marketids.keySet()) {
+		for(String k:keys) {
 			System.out.println("public static final int "+k+" = "+marketids.get(k)+" ;") ;
 		}
 		System.out.println("}") ;
-
+		
+		keys = coin_names.keySet().toArray(new String[0]) ;
+		Arrays.sort(keys) ;
 		System.out.println("public static class Currencies {") ;
-		for(String k:coin_names.keySet()) {
+		for(String k:keys) {
 			System.out.println("public static final String "+k+" = \""+coin_names.get(k)+"\" ;") ;
 		}
 		System.out.println("}") ;
 
 		
+		keys = currencies.keySet().toArray(new String[0]) ;
+		Arrays.sort(keys) ;
 		System.out.println("public static Map<String,String> CurrencyNames = new HashMap<String,String>() ;") ;
 		System.out.println("static {") ;
-		for(String currency:currencies.keySet()) {
+		for(String currency:keys) {
 			System.out.println("CurrencyNames.put(\""+currency+"\",\""+currencies.get(currency)+"\") ;") ;
 		}
 		System.out.println("}") ;
