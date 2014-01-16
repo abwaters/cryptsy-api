@@ -62,16 +62,43 @@ public class Cryptsy_Test {
 	@Test
 	public void testAllCurrencies() throws CryptsyException {
 		Map<String,String> currencies = new HashMap<String,String>() ;
+		Map<String,String> marketids = new HashMap<String,String>() ;
+		Map<String,String> coin_names = new HashMap<String,String>() ;
+		
 		PublicMarket[] markets = cryptsy.getPublicMarketData();
 		for(PublicMarket market:markets) {
 			if( !currencies.containsKey(market.primarycode) )
 				currencies.put(market.primarycode,market.primaryname) ;
 			else if( !currencies.containsKey(market.secondarycode) )
 				currencies.put(market.secondarycode,market.secondaryname) ;
+			String mc = market.primarycode.toUpperCase()+"_"+market.secondarycode.toUpperCase() ;
+			if( !marketids.containsKey(mc) )
+				marketids.put(mc, market.marketid) ;
+			if( !coin_names.containsKey(market.primaryname) ) 
+				coin_names.put(market.primaryname, market.primarycode) ;
+			else if( !coin_names.containsKey(market.secondaryname) )
+				coin_names.put(market.secondaryname, market.secondarycode) ;
 		}
+
+		System.out.println("public static class Markets {") ;
+		for(String k:marketids.keySet()) {
+			System.out.println("public static final int "+k+" = "+marketids.get(k)+" ;") ;
+		}
+		System.out.println("}") ;
+
+		System.out.println("public static class Currencies {") ;
+		for(String k:coin_names.keySet()) {
+			System.out.println("public static final String "+k+" = \""+coin_names.get(k)+"\" ;") ;
+		}
+		System.out.println("}") ;
+
+		
+		System.out.println("public static Map<String,String> CurrencyNames = new HashMap<String,String>() ;") ;
+		System.out.println("static {") ;
 		for(String currency:currencies.keySet()) {
 			System.out.println("CurrencyNames.put(\""+currency+"\",\""+currencies.get(currency)+"\") ;") ;
 		}
+		System.out.println("}") ;
 	}
 	
 	@Test
