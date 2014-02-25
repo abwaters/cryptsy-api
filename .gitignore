@@ -8,3 +8,5 @@
 config.properties
 .DS_Store
 Cryptsy_Personal.java
+data
+.settings

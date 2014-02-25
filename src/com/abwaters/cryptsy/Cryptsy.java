@@ -1129,8 +1129,6 @@ public class Cryptsy {
 		public static final int XNC_LTC = 67 ;
 		public static final int XPM_BTC = 63 ;
 		public static final int XPM_LTC = 106 ;
-		public static final int YAC_BTC = 11 ;
-		public static final int YAC_LTC = 22 ;
 		public static final int YBC_BTC = 73 ;
 		public static final int ZCC_BTC = 140 ;
 		public static final int ZET_BTC = 85 ;
@@ -1201,6 +1199,8 @@ public class Cryptsy {
 		CurrencyNames.put("MEC","MegaCoin") ;
 		CurrencyNames.put("MEM","MemeCoin") ;
 		CurrencyNames.put("MEOW","KittehCoin") ;
+		CurrencyNames.put("MEC","MegaCoin") ;
+		CurrencyNames.put("MEM","MemeCoin") ;
 		CurrencyNames.put("MNC","MinCoin") ;
 		CurrencyNames.put("MOON","MoonCoin") ;
 		CurrencyNames.put("MST","MasterCoin (Hydro)") ;
@@ -1243,6 +1243,7 @@ public class Cryptsy {
 		CurrencyNames.put("YAC","YaCoin") ;
 		CurrencyNames.put("YBC","YBCoin") ;
 		CurrencyNames.put("ZCC","ZcCoin") ;
+		CurrencyNames.put("YBC","YBCoin") ;
 		CurrencyNames.put("ZET","ZetaCoin") ;
 	}
 	
