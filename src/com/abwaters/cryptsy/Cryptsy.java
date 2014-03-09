@@ -461,8 +461,11 @@ public class Cryptsy {
 		return response.toString();
 	}
 
-	private String toHex(byte[] b) throws UnsupportedEncodingException {
-		return String.format("%040x", new BigInteger(1, b));
+	private String toHex(byte[] a) throws UnsupportedEncodingException {
+		StringBuilder sb = new StringBuilder();
+		for(byte b:a)
+			sb.append(String.format("%02x", b&0xff));
+		return sb.toString();		
 	}
 
 	/*
