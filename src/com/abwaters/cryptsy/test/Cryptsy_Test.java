@@ -50,6 +50,15 @@ public class Cryptsy_Test {
 		Properties p = load(new File(userdir, "config.properties"));
 		String key = p.getProperty("cryptsy.key");
 		String secret = p.getProperty("cryptsy.secret");
+		
+		String proxy_host = p.getProperty("proxy.host") ;
+		String proxy_port = p.getProperty("proxy.port") ;
+		
+		if( proxy_host != null && proxy_host.length() > 0 ) {
+			System.setProperty("http.proxyHost", proxy_host) ;
+			System.setProperty("http.proxyPort", proxy_port) ;
+		}
+		
 		int request_limit = Integer.parseInt(p
 				.getProperty("cryptsy.request_limit"));
 		int auth_request_limit = Integer.parseInt(p
