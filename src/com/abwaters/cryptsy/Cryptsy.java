@@ -759,15 +759,20 @@ public class Cryptsy {
 	 * 
 	 */
 	private class DepthDeserializer implements JsonDeserializer<DepthReturn> {
+		
 		public DepthReturn deserialize(JsonElement json, Type typeOfT,
 				JsonDeserializationContext context) throws JsonParseException {
 			DepthReturn depth = new DepthReturn() ;
 			if (json.isJsonObject() ) {
 				JsonObject o = json.getAsJsonObject() ;
-				JsonArray asell = o.getAsJsonArray("sell") ;
-				JsonArray abuy = o.getAsJsonArray("buy") ;
-				depth.sell = convertToPriceQuantityArray(asell) ;
-				depth.buy = convertToPriceQuantityArray(abuy) ;
+				try {
+					JsonArray asell = o.getAsJsonArray("sell") ;
+					JsonArray abuy = o.getAsJsonArray("buy") ;
+					depth.sell = convertToPriceQuantityArray(asell) ;
+					depth.buy = convertToPriceQuantityArray(abuy) ;
+				}catch(ClassCastException e) {
+					return null ;
+				}
 			}
 			return depth ;
 		}
