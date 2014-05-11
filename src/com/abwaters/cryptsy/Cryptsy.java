@@ -344,7 +344,7 @@ public class Cryptsy {
 		initialized = true;
 	}
 
-	private final void preCall() {
+	private void preCall() {
 		while (nonce == last_nonce)
 			nonce++;
 		long elapsed = System.currentTimeMillis() - last_request;
@@ -358,7 +358,7 @@ public class Cryptsy {
 		last_request = System.currentTimeMillis();
 	}
 
-	private final String request(String urlstr) throws CryptsyException {
+	private String request(String urlstr) throws CryptsyException {
 
 		// handle precall logic
 		preCall();
@@ -387,7 +387,7 @@ public class Cryptsy {
 		return response.toString();
 	}
 
-	private final void preAuth() {
+	private void preAuth() {
 		while (nonce == last_nonce)
 			nonce++;
 		long elapsed = System.currentTimeMillis() - auth_last_request;
@@ -401,7 +401,7 @@ public class Cryptsy {
 		auth_last_request = System.currentTimeMillis();
 	}
 
-	private final String authrequest(String method, Map<String, String> args)
+	private String authrequest(String method, Map<String, String> args)
 			throws CryptsyException {
 		if (!initialized)
 			throw new CryptsyException("Cryptsy not initialized.");
