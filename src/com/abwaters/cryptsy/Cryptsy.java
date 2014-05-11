@@ -42,7 +42,6 @@ import com.google.gson.annotations.SerializedName;
 public class Cryptsy {
 
 	private static final String USER_AGENT = "Mozilla/5.0 (compatible; CRYPTSY-API/1.0; MSIE 6.0 compatible; +https://github.com/abwaters/cryptsy-api)";
-	private static final String TICKER_TRADES_URL = "https://btc-e.com/api/2/";
 	private static final String PUB_API_URL = "http://pubapi.cryptsy.com/api.php";
 	private static final String AUTH_API_URL = "https://api.cryptsy.com/api";
 
