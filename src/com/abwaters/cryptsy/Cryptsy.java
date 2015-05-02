@@ -422,7 +422,11 @@ public class Cryptsy {
 			String arg = iter.next();
 			if (postData.length() > 0)
 				postData += "&";
-			postData += arg + "=" + URLEncoder.encode(args.get(arg));
+			try {
+				postData += arg + "=" + URLEncoder.encode(args.get(arg), java.nio.charset.StandardCharsets.UTF_8.toString());
+			} catch (UnsupportedEncodingException e) {
+				throw new CryptsyException("Charset error.", e);
+			}
 		}
 
 		// create connection
